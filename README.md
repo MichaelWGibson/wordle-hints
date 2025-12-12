@@ -15,15 +15,18 @@ A Wordle-style game for revealing Christmas gift hints! This project creates a f
 
 1. List your hints separated by commas (e.g., "GIFT,TREE,BELLS,SNOWMAN")
 2. Base64 encode the string
-3. Add it to the URL: `https://yourusername.github.io/wordle-hints/?target=encodedstring`
+3. Add it to the URL with the `target` parameter
+4. Optionally add the `id` parameter to number each day's present
 
 ### Example
 
-For hints: "GIFT,TREE,BELLS,SNOWMAN,MISTLETOE"
+For Day 1 hints: "GIFT,TREE,BELLS,SNOWMAN,BRACELET"
 
-Encode to base64: `R0lGVCxUUkVFLEJFTExTLFNOT1dNQU4sTUlTVExFVE9F`
+Encode to base64: `R0lGVCxUUkVFLEJFTExTLFNOT1dNQU4sQlJBQ0VMRVQ=`
 
-Full URL: `https://yourusername.github.io/wordle-hints/?target=R0lGVCxUUkVFLEJFTExTLFNOT1dNQU4sTUlTVExFVE9F`
+Full URL: `https://yourusername.github.io/wordle-hints/?id=1&target=R0lGVCxUUkVFLEJFTExTLFNOT1dNQU4sQlJBQ0VMRVQ=`
+
+This will display "Present #1" as the title.
 
 ### Encoding Base64
 
@@ -31,7 +34,7 @@ You can encode your hints using:
 
 **Command Line (Linux/Mac):**
 ```bash
-echo -n "SCARF,WATCH,BOOTS" | base64
+echo -n "GIFT,TREE,BELLS,SNOWMAN" | base64
 ```
 
 **Online Tools:**
@@ -39,18 +42,22 @@ echo -n "SCARF,WATCH,BOOTS" | base64
 
 **JavaScript Console:**
 ```javascript
-btoa("SCARF,WATCH,BOOTS")
+btoa("GIFT,TREE,BELLS,SNOWMAN")
 ```
 
 ## Features
 
 - Complete Wordle implementation with color-coded letter feedback
-- Green: Correct letter in correct position
-- Yellow: Correct letter in wrong position
-- Gray: Letter not in word
+  - Green: Correct letter in correct position
+  - Yellow: Correct letter in wrong position
+  - Gray: Letter not in word
 - On-screen keyboard and physical keyboard support
 - Responsive design for mobile and desktop
 - Randomly selects one hint from your list
+- **Supports words from 4 to 8 letters long**
+- **Confetti celebration when you guess correctly!**
+- **Customizable title with Present # using the `id` parameter**
+- Helpful subtitle: "Solve the wordle to get a hint about your present"
 
 ## Setting Up GitHub Pages
 
@@ -64,7 +71,30 @@ btoa("SCARF,WATCH,BOOTS")
 
 ## Tips
 
-- Use 5-letter words for the best Wordle experience
-- Words shorter than 5 letters will be padded with spaces
-- Words longer than 5 letters will be truncated to 5 letters
+- **Words must be between 4-8 letters long**
+- Mix different word lengths for variety
+- Examples:
+  - 4 letters: GIFT, TREE, STAR, BOOK
+  - 5 letters: SCARF, WATCH, BOOTS, RINGS
+  - 6 letters: CANDLE, TICKET, GLOVES
+  - 7 letters: SWEATER, VOUCHER, PERFUME
+  - 8 letters: NECKLACE, BRACELET, EARRINGS
 - Mix easier and harder hints for variety throughout the 12 days
+- You can mix different word lengths in the same encoded string
+- Use the `id` parameter to create URLs for each of the 12 days (id=1 through id=12)
+
+## Creating 12 Days of URLs
+
+Example workflow:
+
+```bash
+# Day 1
+echo -n "SCARF,GLOVE,BOOTS" | base64
+# URL: ?id=1&target=U0NBUkYsR0xPVkUsQk9PVFM=
+
+# Day 2
+echo -n "WATCH,CLOCK,TIMER" | base64
+# URL: ?id=2&target=V0FUQ0gsQ0xPQ0ssVElNRVI=
+
+# ... and so on for all 12 days
+```

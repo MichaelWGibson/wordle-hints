@@ -35,6 +35,31 @@
             text-align: center;
             letter-spacing: 0.2rem;
             color: #000000;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            font-weight: 400;
+            text-align: center;
+            color: #787c7e;
+            margin-bottom: 10px;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f0f;
+            position: absolute;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
         }
 
         .game-container {
@@ -193,7 +218,8 @@
 </head>
 <body>
     <header>
-        <h1>WORDLE</h1>
+        <h1 id="title">WORDLE</h1>
+        <div class="subtitle">Solve the wordle to get a hint about your present</div>
     </header>
 
     <div class="game-container">
@@ -345,8 +371,9 @@
             const guess = guesses[currentRow];
             const isCorrect = guess === targetWord;
             const isLastGuess = currentRow === maxGuesses - 1;
+            const rowToCheck = currentRow; // Capture the current row before incrementing
 
-            checkGuess(guess, isCorrect, isLastGuess);
+            checkGuess(guess, isCorrect, isLastGuess, rowToCheck);
 
             if (!isCorrect && !isLastGuess) {
                 currentRow++;
@@ -355,7 +382,7 @@
         }
 
         // Check guess and update tiles
-        function checkGuess(guess, isCorrect, isLastGuess) {
+        function checkGuess(guess, isCorrect, isLastGuess, rowToCheck) {
             const targetLetters = targetWord.split('');
             const guessLetters = guess.split('');
             const letterCount = {};
@@ -385,7 +412,7 @@
             // Update tiles with animation
             result.forEach((state, i) => {
                 setTimeout(() => {
-                    const tile = document.getElementById(`tile-${currentRow}-${i}`);
+                    const tile = document.getElementById(`tile-${rowToCheck}-${i}`);
                     tile.classList.add('flip', state);
 
                     // Update keyboard key state
@@ -398,6 +425,7 @@
                             if (isCorrect) {
                                 showMessage('Correct! You found your hint!');
                                 gameOver = true;
+                                createConfetti();
                             } else if (isLastGuess) {
                                 showMessage(`Game Over! The word was: ${targetWord}`);
                                 gameOver = true;
@@ -432,6 +460,39 @@
             }, 3000);
         }
 
+        // Create confetti animation
+        function createConfetti() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffa500', '#ff1493'];
+            const confettiCount = 150;
+
+            for (let i = 0; i < confettiCount; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+
+                    // Random shapes (squares and rectangles)
+                    if (Math.random() > 0.5) {
+                        confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                        confetti.style.height = (Math.random() * 10 + 5) + 'px';
+                    } else {
+                        confetti.style.width = (Math.random() * 15 + 5) + 'px';
+                        confetti.style.height = (Math.random() * 5 + 3) + 'px';
+                    }
+
+                    document.body.appendChild(confetti);
+
+                    // Remove confetti after animation
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }, i * 10);
+            }
+        }
+
         // Handle physical keyboard
         document.addEventListener('keydown', (e) => {
             if (gameOver) return;
@@ -446,6 +507,14 @@
         });
 
         // Initialize game
+        const urlParams = new URLSearchParams(window.location.search);
+        const presentId = urlParams.get('id');
+
+        // Update title if ID is provided
+        if (presentId) {
+            document.getElementById('title').textContent = `Present #${presentId}`;
+        }
+
         targetWord = getTargetWord();
         if (targetWord) {
             wordLength = targetWord.length; // Set word length based on target word
